@@ -1,0 +1,192 @@
+Bao ve nong trang
+Nông trang có rất nhiều ngọn đồi núi, để bảo vệ nông trang nông dân John muốn đặt người canh gác trên các ngọn đồi này.
+
+Anh ta băn khoăn không biết sẽ cần bao nhiêu người canh gác nếu như anh ta muốn đặt 1 người canh gác trên đỉnh của mỗi đồi. Anh ta có bản đồ của nông trang là một ma trận gồm N (1 < N <= 700) hàng và M (1 < M <= 700) cột. Mỗi phần tử của ma trận là độ cao H_ij so với mặt nước biển (0 <= H_ij <= 10,000) của ô (i, j). Hãy giúp anh ta xác định số lượng đỉnh đồi trên bản đồ.
+
+Đỉnh đồi là 1 hoặc nhiều ô nằm kề nhau của ma trận có cùng độ cao được bao quanh bởi cạnh của bản đồ hoặc bởi các ô có độ cao nhỏ hơn. Hai ô gọi là kề nhau nếu độ chênh lệch giữa tọa độ X không quá 1 và chênh lệch tọa độ Y không quá 1.
+
+[Input]
+
+* Dòng 1: Số lượng mẫu
+
+* Dòng 2: Hai số nguyên cách nhau bởi dấu cách: N và M
+
+* Dòng 3: N+1: Dòng i+1 mô tả hàng i của ma trận với M số nguyên cách nhau bởi dấu cách: H_ij
+
+[Output]
+
+* Dòng 1: Một số nguyên duy nhất là số lượng đỉnh đồi.
+
+[Sample]
+
+[Input]
+
+3
+
+8 7
+
+4 3 2 2 1 0 1
+
+3 3 3 2 1 0 1
+
+2 2 2 2 1 0 0
+
+2 1 1 1 1 0 0
+
+1 1 0 0 0 1 0
+
+0 0 0 1 1 1 0
+
+0 1 2 2 1 1 0
+
+0 1 1 1 2 1 0
+
+8 7
+
+4 3 2 2 1 1 1
+
+3 3 3 2 1 0 1
+
+2 2 2 2 1 0 0
+
+2 1 1 1 1 0 0
+
+1 1 0 0 0 1 0
+
+0 0 0 1 1 1 0
+
+0 1 2 2 1 1 0
+
+0 1 1 1 2 1 0
+
+8 7
+
+4 3 2 2 1 1 1
+
+3 3 3 2 1 0 1
+
+2 2 2 2 1 0 0
+
+2 1 1 2 1 0 0
+
+1 1 2 2 0 1 0
+
+0 0 0 2 1 1 0
+
+0 1 2 2 1 1 0
+
+0 1 1 1 2 1 0
+
+ 
+
+[Output]
+
+#1 3
+
+#2 2
+
+#3 1
+
+
+// ---- Bao ve nong trai --- BFS
+#include<iostream>
+using namespace std;
+#define cons 110
+struct Queue
+{
+	int rear, front;
+	int arr_data[100000];
+	Queue()
+	{
+		rear = front = 0;
+	}	
+	bool isEmpty()
+	{
+		return rear == front;
+	}
+	void push(int a)
+	{
+		arr_data[rear] = a;
+		rear++;
+		rear = rear % 100000;
+	}
+	int pop()
+	{
+		int a = arr_data[front];
+		front++;
+		front = front % 100000;
+		return a;
+	}
+};
+int n,m;
+int arr_map[cons][cons];
+int check[cons][cons];
+int dem;
+int dx[8]={-1,-1,0,1,1,1,0,-1};
+int dy[8]={0,1,1,1,0,-1,-1,-1};
+void BFS(int vt_hang,int vt_cot)
+{
+	Queue Q = Queue();
+	Q.push(vt_hang);
+	Q.push(vt_cot);
+	check[vt_hang][vt_cot] = 1;
+	int temp = 1;
+	while (!Q.isEmpty())
+	{
+		int x = Q.pop();
+		int y = Q.pop();
+		for (int i = 0; i < 8; i++)
+		{
+			int hang = x + dx[i];
+			int cot = y + dy[i];
+			if(hang>=0 && hang<n && cot>=0 && cot<m)
+			{
+				if(check[hang][cot] == 0 && arr_map[hang][cot] == arr_map[x][y])
+				{
+					check[hang][cot] = 1;
+					Q.push(hang);
+					Q.push(cot);
+				}
+				else
+				{
+					if(arr_map[hang][cot] > arr_map[x][y])
+					{
+						temp = 0;
+					}
+				}
+			}
+		}
+	}
+	dem = dem + temp;
+}
+int main()
+{
+	freopen("input.txt","r",stdin);
+	int th;cin >> th;
+	for (int tc = 1; tc <= th; tc++)
+	{
+		cin >> n >> m;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < m; j++)
+			{
+				cin >> arr_map[i][j];
+				check[i][j] = 0;
+			}
+		}
+		dem = 0;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < m; j++)
+			{
+				if(check[i][j] == 0)
+				{
+					BFS(i,j);
+				}
+			}
+		}
+		cout << "Case #" << tc << " " << dem << endl;
+	}
+	return 0;
+}
+ 

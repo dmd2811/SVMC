@@ -1,0 +1,192 @@
+Hugo cần đi qua 1 đoạn đường B.
+
+Trên đoạn đường đi qua có N cổng. Tại mỗi cổng có 1 số lượng binh sĩ và giá để đi qua cổng đó. Muốn đi qua mỗi cổng Hugo có 3 cách lựa chọn.
+
+1. Pass
+
+Trả số tiền quy định ở cổng đó để được đi qua
+
+2. Hire
+
+Trả gấp đôi số tiền ở cổng đó để thuê số binh sĩ gộp vào đoàn quân của mình
+
+3. battle
+
+Điều kiện để đánh nhau là số quân của Hugo >= số lượng lính tại cổng đó. Có các lưu ý:
+
++ Hugo k được tính vào số lượng của quân
+
++ Mỗi người lính chỉ tham gia được vào tối đa 3 trận đánh. Sau 3 trận đánh nếu đi nhóm binh sĩ đó còn sống thì cũng giải tán.
+
++ Mỗi trận đánh thì tất cả số binh sĩ đều tham gia.
+
++ Đánh nhau chết theo tỉ lệ 1: 1. Ai tham gia trước sẽ bị chết trước
+
+Input:
+Dòng đầu tiên là số lượng trường hợp thử nghiệm
+
+Mỗi trường hợp thử nghiệm sẽ có
+          Dòng đầu tiên chứa số lượng cổng N
+
+          N dòng tiếp theo chứa 2 số là số binh lính và chi phí tại mỗi cổng
+
+Output: In ra chi phí nhỏ nhất Hugo có thể đi qua đoạn đường B
+
+Điều kiện input: số cổng <=20
+
+-      2 <=Số lính và chi phí đi qua <=1000
+
+VD:
+
+Input
+2
+
+7
+
+10 100
+
+70 5
+
+80 15
+
+20 60
+
+50 90
+
+30 80
+
+10 10
+
+9
+
+600 800
+
+300 400
+
+300 400
+
+1000 400
+
+300 600
+
+100 300
+
+600 300
+
+600 500
+
+1000 300
+
+ 
+
+Output:
+
+#1 150
+
+#2 3000
+
+
+// ----- Tuong quan Hugo ----- Back_track
+#include<iostream>
+using namespace std;
+#define cons 30
+int so_cong;
+int binh_linh[cons];
+int chi_phi[cons];
+int luu_tru[3];
+int minmin;
+bool check(int sl_binhlinh)
+{
+	int tong=0;
+	for (int i = 0; i < 3; i++)
+	{
+		tong = tong + luu_tru[i];
+	}
+	if(tong >= sl_binhlinh) return true;
+	return false;
+}
+void back_track(int vt_cong,int kq)
+{
+	if(vt_cong  == so_cong)
+	{
+		if(minmin > kq) minmin = kq;
+		return;
+	}
+	if(kq > minmin) return;
+
+	for (int i = 0; i < 3; i++)
+	{
+		if( i == 0 )
+		{
+			back_track(vt_cong+1,kq+chi_phi[vt_cong]);
+		}
+		else if (i == 1)
+		{
+			int back_up[3];
+			for (int k = 0; k < 3; k++)
+			{
+				back_up[k] = luu_tru[k];
+			}
+			luu_tru[0] = luu_tru[0] + binh_linh[vt_cong];
+			back_track(vt_cong + 1, kq + chi_phi[vt_cong] * 2);
+			for (int k = 0; k < 3; k++)
+			{
+				luu_tru[k] = back_up[k];
+			}
+		}
+		else if (i == 2 && check(binh_linh[vt_cong]))
+		{
+			int back_up[3];
+			for (int k = 0; k < 3; k++)
+			{
+				back_up[k] = luu_tru[k];
+			}
+
+			int temp = binh_linh[vt_cong];
+			for (int j = 2; j >=0 ; j--)
+			{
+				if(luu_tru[j] >= temp)
+				{
+					luu_tru[j] = luu_tru[j] - temp;
+					temp = 0;
+					break;
+				}
+				else if(luu_tru[j] < temp)
+				{
+					temp = temp - luu_tru[j];
+					luu_tru[j] = 0;
+				}
+			}
+			luu_tru[2] = luu_tru[1];
+			luu_tru[1] = luu_tru[0];
+			luu_tru[0] = 0;
+			back_track(vt_cong+1,kq);
+
+			for (int k = 0; k < 3; k++)
+			{
+				luu_tru[k] = back_up[k];
+			}
+		}
+	}
+}
+int main()
+{
+	freopen("input.txt","r",stdin);
+	int th;cin>> th;
+	for (int tc = 1; tc <= th; tc++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			luu_tru[i] = 0;
+		}
+		cin >> so_cong;
+		for (int i = 0; i < so_cong; i++)
+		{
+			cin >> binh_linh[i] >> chi_phi[i];
+		}
+		minmin = 999999;
+		back_track(0,0);
+		cout << "Case #" << tc << " " << minmin << endl;
+	}
+	return 0;
+}

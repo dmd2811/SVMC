@@ -1,0 +1,41 @@
+Given a integer N. Find number of possible ways to represent N as a sum of at most five cubes.
+
+Input
+
+First line contains N.
+
+1<=N<=125000.
+
+Output
+
+Output the result
+
+Sample
+
+Input
+
+4
+
+1
+64
+
+905
+
+15436
+
+ 
+
+Output
+#1 1
+
+#2 2
+
+#3 0
+
+#4 12
+
+ 
+
+Giải thích:
++ Cách 1: 64 = 27 + 27 + 8 + 1 + 1
++ Cách 2: 64 = 64 + 0  + 0 + 0 + 0
